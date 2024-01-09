@@ -54,11 +54,11 @@ app.MapGet("/", async () =>
     })
     .WithOpenApi();
 
-app.MapPost("/send", (HttpContext context) =>
+app.MapPost("/send", async (HttpContext context) =>
     {
         using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8))
         {
-            app.Logger.Log(LogLevel.Warning, reader.ReadToEnd());
+            app.Logger.Log(LogLevel.Warning, await reader.ReadToEndAsync());
         }
         
         return Result.Ok(true);
