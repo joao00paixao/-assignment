@@ -8,10 +8,10 @@ ARG PORT=80
 COPY . ./build/
 WORKDIR /build/
 
-RUN dotnet test ./${APP_NAME}/${APP_NAME}.csproj
+RUN dotnet test ./src/MonkeyIsland/${APP_NAME}/${APP_NAME}.csproj
 
 # Build and publish
-RUN dotnet publish ./${APP_NAME}/${APP_NAME}.csproj -c $BUILDCONFIG -o out
+RUN dotnet publish ./src/MonkeyIsland/${APP_NAME}/${APP_NAME}.csproj -c $BUILDCONFIG -o out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
