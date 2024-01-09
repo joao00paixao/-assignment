@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using MonkeyIsland.Application.Configurations;
 using MonkeyIsland.Application.Services;
 using MonkeyIsland.Application.Abstractions;
@@ -34,11 +35,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapGet("/", () =>
+app.MapGet("/", async () =>
     {
         var resolveService = app.Services.GetService<IResolveMysteryService>();
         
-        return resolveService!.ResolveMystery();
+        var result = await resolveService!.ResolveMystery();
+        
+        return result.IsSuccess;
     })
     .WithOpenApi();
 
