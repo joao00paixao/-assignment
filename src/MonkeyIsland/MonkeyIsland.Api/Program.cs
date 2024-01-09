@@ -11,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 string environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development";
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -38,9 +41,13 @@ app.UseHttpsRedirection();
 
 app.MapGet("/", async () =>
     {
+        app.Logger.Log(LogLevel.Warning, "Starting mystery resolve.");
+        
         var resolveService = app.Services.GetService<IResolveMysteryService>();
         
         var result = await resolveService!.ResolveMystery();
+        
+        app.Logger.Log(LogLevel.Warning, "Mystery was resolved: " + result.IsSuccess);
         
         return result.IsSuccess;
     })
@@ -50,12 +57,12 @@ app.MapPost("/send", (string result) =>
     {
         if (string.IsNullOrEmpty(result))
         {
+            app.Logger.Log(LogLevel.Warning, "No result passed.");
+            
             return Result.Fail("No result passed.");
         }
-        
-        var logger = new LoggerFactory().CreateLogger("Information");
 
-        logger.LogInformation(result);
+        app.Logger.Log(LogLevel.Warning, result);
         
         return Result.Ok(result);
     })
