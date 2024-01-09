@@ -1,0 +1,8 @@
+version: '3.9'
+
+services:
+  monkey-island-api:
+    image: ghcr.io/joao00paixao/monkey-island-api:develop
+    build:
+      context: .
+      dockerfile: ./MonkeyIsland.Api/Dockerfile
