@@ -53,6 +53,10 @@ app.MapPost("/send", (string result) =>
             return Result.Fail("No result passed.");
         }
         
+        var logger = new LoggerFactory().CreateLogger("Information");
+
+        logger.LogInformation(result);
+        
         return Result.Ok(result);
     })
     .WithOpenApi();
