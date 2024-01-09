@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using FluentResults;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MonkeyIsland.Application.Configurations;
 using MonkeyIsland.Domain.Requests;
@@ -10,14 +11,16 @@ namespace MonkeyIsland.Application.Services;
 
 public class RequestClient : IRequestClient
 {
-    public RequestClient(HttpClient httpClient, IOptions<MonkeyIslandConfiguration> monkeyIslandConfiguration)
+    public RequestClient(HttpClient httpClient, IOptions<MonkeyIslandConfiguration> monkeyIslandConfiguration, ILogger<RequestClient> logger)
     {
         _httpClient = httpClient;
         _monkeyIslandConfiguration = monkeyIslandConfiguration.Value;
+        _logger = logger;
     }
 
     private HttpClient _httpClient { get; set; }
     private MonkeyIslandConfiguration _monkeyIslandConfiguration { get; set; }
+    private ILogger<RequestClient> _logger { get; set; }
     
     
     public async Task<Result<ICollection<int>>> GetMagicNumbers()
@@ -49,10 +52,12 @@ public class RequestClient : IRequestClient
         }
     }
     
-    public async Task<Result<string>> GetSecretKey(int calculatedTotal)
+    public async Task<Result<bool>> ValidateCalculatedTotal(int calculatedTotal)
     {
         var requestUrl = $"{_monkeyIslandConfiguration.ApiUrl}/{_monkeyIslandConfiguration.ApiKey}";
         var requestData = new MonkeyIslandValidateTotalRequest(calculatedTotal, _monkeyIslandConfiguration.BaseAddress + "/send");
+        
+        _logger.LogWarning($"Getting secret key for total: {requestData.Sum} with callback URL: {requestData.CallbackUrl}");
         
         var response = await _httpClient.PostAsync(requestUrl, new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestData), new MediaTypeHeaderValue("application/json")));
         
@@ -60,22 +65,8 @@ public class RequestClient : IRequestClient
         {
             return Result.Fail("Could not retrieve secret key, check the calculated total.");
         }
-
-        try
-        {
-            var responseJson = Newtonsoft.Json.JsonConvert.DeserializeObject<MonkeyIslandValidateTotalResponse>(await response.Content.ReadAsStringAsync());
-            
-            if (responseJson is null || string.IsNullOrEmpty(responseJson.CallbackUrl))
-            {
-                return Result.Fail("Could not retrieve secret key from response.");
-            }
-            
-            return Result.Ok(responseJson.CallbackUrl);
-        }
-        catch (JsonReaderException)
-        {
-            return Result.Fail("Response format is incorrect.");
-        }
+        
+        return Result.Ok(true);
     }
     
 }

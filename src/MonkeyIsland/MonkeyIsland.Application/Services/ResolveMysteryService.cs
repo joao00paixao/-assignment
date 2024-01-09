@@ -13,7 +13,7 @@ public class ResolveMysteryService : IResolveMysteryService
         _requestClient = requestClient;
     }
     
-    public async Task<Result<string>> ResolveMystery()
+    public async Task<Result<bool>> ResolveMystery()
     {
         var magicNumbers = await _requestClient.GetMagicNumbers();
         
@@ -24,8 +24,8 @@ public class ResolveMysteryService : IResolveMysteryService
         
         var calculatedResult = magicNumbers.Value.Sum();
         
-        var secretKey = await _requestClient.GetSecretKey(calculatedResult);
+        var resolveResult = await _requestClient.ValidateCalculatedTotal(calculatedResult);
         
-        return !secretKey.IsSuccess ? Result.Fail(string.Empty) : secretKey;
+        return resolveResult.IsSuccess;
     }
 }

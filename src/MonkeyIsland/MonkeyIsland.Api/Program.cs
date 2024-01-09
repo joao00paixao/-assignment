@@ -1,3 +1,4 @@
+using System.Text;
 using FluentResults;
 using Microsoft.AspNetCore.Http.HttpResults;
 using MonkeyIsland.Application.Configurations;
@@ -53,18 +54,14 @@ app.MapGet("/", async () =>
     })
     .WithOpenApi();
 
-app.MapPost("/send", (string result) =>
+app.MapPost("/send", (HttpContext context) =>
     {
-        if (string.IsNullOrEmpty(result))
+        using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8))
         {
-            app.Logger.Log(LogLevel.Warning, "No result passed.");
-            
-            return Result.Fail("No result passed.");
+            app.Logger.Log(LogLevel.Warning, reader.ReadToEnd());
         }
-
-        app.Logger.Log(LogLevel.Warning, "Result: " + result);
         
-        return Result.Ok(result);
+        return Result.Ok(true);
     })
     .WithOpenApi();
 
