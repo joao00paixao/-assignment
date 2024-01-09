@@ -1,3 +1,4 @@
+using FluentResults;
 using Microsoft.AspNetCore.Http.HttpResults;
 using MonkeyIsland.Application.Configurations;
 using MonkeyIsland.Application.Services;
@@ -42,6 +43,17 @@ app.MapGet("/", async () =>
         var result = await resolveService!.ResolveMystery();
         
         return result.IsSuccess;
+    })
+    .WithOpenApi();
+
+app.MapPost("/send", (string result) =>
+    {
+        if (string.IsNullOrEmpty(result))
+        {
+            return Result.Fail("No result passed.");
+        }
+        
+        return Result.Ok(result);
     })
     .WithOpenApi();
 

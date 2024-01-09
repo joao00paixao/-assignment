@@ -52,7 +52,7 @@ public class RequestClient : IRequestClient
     public async Task<Result<string>> GetSecretKey(int calculatedTotal)
     {
         var requestUrl = $"{_monkeyIslandConfiguration.ApiUrl}/{_monkeyIslandConfiguration.ApiKey}";
-        var requestData = new MonkeyIslandValidateTotalRequest(calculatedTotal, _monkeyIslandConfiguration.BaseAddress);
+        var requestData = new MonkeyIslandValidateTotalRequest(calculatedTotal, _monkeyIslandConfiguration.BaseAddress + "/send");
         
         var response = await _httpClient.PostAsync(requestUrl, new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestData), new MediaTypeHeaderValue("application/json")));
         
