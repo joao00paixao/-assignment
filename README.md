@@ -36,3 +36,14 @@ I first decided to opt for a simple docker build / docker push pipeline as I fir
 I added a "RUN dotnet test" to the Dockerfile as a step but I did not include any unit/integration tests with the project. I left the door open for the unit test possibility with abstraction/DI, applying DRY/SOLID principles.
 
 To unit test our services I used Dependency Injection so we can in the future mock dependencies so we can arrange our unit tests accordingly.
+
+### Pull Request
+
+Unfortunately I created this entire project in one single branch but with quality separation of commits. However I created a new branch with no commits and I have created a pull requests with all changes so it can be reviewed!
+
+Commands used:
+
+```
+git checkout --orphan NEWBRANCH
+git rm -rf .
+ ```
