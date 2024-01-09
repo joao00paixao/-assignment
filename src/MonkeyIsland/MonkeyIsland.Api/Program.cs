@@ -62,7 +62,7 @@ app.MapPost("/send", (string result) =>
             return Result.Fail("No result passed.");
         }
 
-        app.Logger.Log(LogLevel.Warning, result);
+        app.Logger.Log(LogLevel.Warning, "Result: " + result);
         
         return Result.Ok(result);
     })
